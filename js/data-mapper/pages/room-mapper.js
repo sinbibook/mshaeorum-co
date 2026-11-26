@@ -25,8 +25,9 @@
     this.renderRoomNav('[data-room-list-nav]', roomtype && roomtype.id);
     this.mapBookingUrl();
     this.mapDetailHeading(roomtype);
-    this.mapDetailBlocks(roomtype, interiors);
-    this.mapWideImage(roomtype);
+    var layout = this.getDetailLayout(roomtype, interiors);
+    this.mapDetailBlocks(roomtype, interiors, layout);
+    this.mapWideImage(layout);
     this.mapFloorplan(roomtype);
     // 하단 Room Preview 슬라이더 (원본 room_list_sld: 데스크톱 4장)
     this.mapIndexRoomHeading();
@@ -137,6 +138,46 @@
     return this.getRoomtypeImages(roomtype, 'roomtype_exterior') || [];
   };
 
+  /**
+   * 조각컷 배치. 노출(isSelected)된 조각컷 장수에 따라 칸을 나눈다 (2026-11-25 망상해오름).
+   *
+   *   7장 이상 : 상단 2 + 중앙 4 + 하단 와이드 1
+   *   6장      : 상단 2 + 중앙 4
+   *   5장      : 상단 2 + 중앙 2(50:50) + 하단 와이드 1(100%)
+   *   4장      : 상단 2 + 하단 2(50:50)
+   *   3장      : 상단 2 + 하단 와이드 1
+   *
+   * 예전에는 [2..5] 그리드 / [6] 와이드를 자리 번호로 잘라서, 직원이 조각컷 노출을 끄면
+   * 중앙에 3장(한 장만 반쪽으로 남음)이 들어가고 와이드가 사라졌다.
+   * 중앙은 항상 짝수(2 또는 4)로 채우고, 남는 한 장을 와이드로 보낸다.
+   *
+   * 조각컷이 없는 객실(크롤 전 데이터)은 예전처럼 interior 로 채우고 와이드는 숨긴다.
+   */
+  RoomMapper.prototype.getDetailLayout = function (roomtype, interiors) {
+    var slots = this.getRoomDetailSlots(roomtype);
+    var images = this.getRoomDetailImages(roomtype, interiors);
+
+    if (!slots.length) {
+      return {
+        fromSlots: false,
+        main: images[0],
+        side: images[1] || images[0],
+        quad: images.slice(0, 4),
+        wide: null,
+      };
+    }
+
+    var rest = slots.slice(2);
+    var quadCount = rest.length >= 4 ? 4 : rest.length - (rest.length % 2);
+    return {
+      fromSlots: true,
+      main: slots[0],
+      side: slots[1] || images[1] || images[0],
+      quad: rest.slice(0, quadCount),
+      wide: rest[quadCount] || null,
+    };
+  };
+
   RoomMapper.prototype.getRoomDetailImages = function (roomtype, interiors) {
     var images = interiors.slice();
     if (!images.length && roomtype) {
@@ -172,10 +213,10 @@
     });
   };
 
-  RoomMapper.prototype.mapDetailBlocks = function (roomtype, interiors) {
+  RoomMapper.prototype.mapDetailBlocks = function (roomtype, interiors, layout) {
     var self = this;
     var images = this.getRoomDetailImages(roomtype, interiors);
-    var slots = this.getRoomDetailSlots(roomtype);
+    layout = layout || this.getDetailLayout(roomtype, interiors);
     var propNameEn = this.getPropertyNameEn();
     var detailCopy = this.cleanText((images[0] && images[0].description) || roomtype.description);
 
@@ -194,7 +235,7 @@
     });
 
     document.querySelectorAll('[data-room-detail-main-image]').forEach(function (el) {
-      var img = slots[0] || images[0];
+      var img = layout.main;
       if (!img || !img.url) {
         ImageHelpers.applyPlaceholder(el, '객실 이미지');
         return;
@@ -204,7 +245,7 @@
     });
 
     document.querySelectorAll('[data-room-detail-side-image]').forEach(function (el) {
-      var img = slots[1] || images[1] || images[0];
+      var img = layout.side;
       if (!img || !img.url) {
         ImageHelpers.applyPlaceholder(el, '객실 이미지');
         return;
@@ -215,14 +256,17 @@
 
     document.querySelectorAll('[data-room-quad-images]').forEach(function (container) {
       container.innerHTML = '';
-      var quad = slots.length > 2 ? slots.slice(2, 6) : images.slice(0, 4);
-      quad.forEach(function (img) {
+      // 조각컷이 상단 2장 이하뿐이면 중앙 칸을 통째로 숨긴다 (빈 칸 4개를 남기지 않는다)
+      var box = container.closest('.sub_img_box') || container;
+      box.style.display = layout.fromSlots && !layout.quad.length ? 'none' : '';
+
+      layout.quad.forEach(function (img) {
         var li = document.createElement('li');
         self.setBackground(li, img && img.url, '객실 이미지');
         container.appendChild(li);
       });
 
-      if (!container.children.length) {
+      if (!layout.fromSlots && !container.children.length) {
         for (var i = 0; i < 4; i++) {
           var empty = document.createElement('li');
           ImageHelpers.applyBackgroundPlaceholder(empty, '객실 이미지');
@@ -232,12 +276,12 @@
     });
   };
 
-  // MAPPER: roomtype_exterior[6] → [data-room-wide-image]
+  // MAPPER: 조각컷 하단 와이드 1장 → [data-room-wide-image] (배치는 getDetailLayout)
   // 원본에 이 영역이 없는 사이트도 있다 → 이미지가 없으면 섹션째 숨긴다.
-  RoomMapper.prototype.mapWideImage = function (roomtype) {
+  RoomMapper.prototype.mapWideImage = function (layout) {
     var section = document.querySelector('[data-room-wide-section]');
     if (!section) return;
-    var wide = this.getRoomDetailSlots(roomtype)[6];
+    var wide = layout && layout.wide;
     if (!wide || !wide.url) {
       section.style.display = 'none';
       return;

@@ -339,14 +339,26 @@ I give you a gift for your life.
 | `data-room-detail-main-image`                          | 상세 소개 좌측 이미지             | `roomtype_interior[0] → roomtype_thumbnail[0]`                   |
 | `data-room-detail-side-image`                          | 상세 소개 우측 이미지             | `roomtype_interior[1] → [0] → roomtype_thumbnail[0]`             |
 | `data-room-detail-copy`                                | 상세 소개 짧은 문구               | `image.description → roomtypes[current].description → 기본 문구` |
-| `data-room-quad-images`                                | Room Preview 위 4장 이미지        | `roomtype_interior[0..3]`, 이미지가 많아도 최대 4장만 노출       |
+| `data-room-quad-images`                                | 조각컷 중앙 칸                    | 조각컷(`roomtype_exterior`) 장수별 2 또는 4장, 없으면 `roomtype_interior[0..3]` |
+| `data-room-wide-image`                                 | 조각컷 하단 와이드 1장            | 조각컷 장수가 7장 이상·5장·3장일 때 남는 1장, 없으면 영역 미노출 |
 | `data-room-floorplan-section`                          | 객실 평면도 전체 영역             | 평면도 이미지가 없으면 전체 미노출                               |
 | `data-room-floorplan-image`                            | 객실 평면도 이미지                | 원본 객실 상세 평면도 영역에서 크롤링된 이미지                   |
 | `data-room-list-slides`                                | 하단 Room Preview                 | `roomtypes[]` 공용 객실 카드                                     |
 
 상세 히어로는 원본 `dbffpension.co.kr/room.html?room_id=`처럼 텍스트 오버레이 없이 이미지만 슬라이드한다. 객실명과 객실 탭은 `view_cate_box` 안에서 노출한다.
 
-Room Preview 바로 위의 4장 이미지 영역은 원본의 `.sub_img_box` 2x2 레이아웃이다. 매핑된 객실 이미지가 5장 이상이어도 이 영역에는 앞에서부터 최대 4장까지만 노출한다.
+조각컷(크롤러가 `roomtype_exterior` 에 담는 상세 사진)은 노출된 장수에 따라 칸을 나눈다 (`getDetailLayout`).
+
+| 노출 장수 | 상단 (`main` / `side`) | 중앙 `.sub_img_box` | 하단 와이드 |
+| --------- | ---------------------- | ------------------- | ----------- |
+| 7장 이상  | 2                      | 4 (2x2)             | 1 (100%)    |
+| 6장       | 2                      | 4 (2x2)             | 없음        |
+| 5장       | 2                      | 2 (50:50)           | 1 (100%)    |
+| 4장       | 2                      | 2 (50:50)           | 없음        |
+| 3장       | 2                      | 숨김                | 1 (100%)    |
+
+중앙 칸은 항상 짝수로 채우고 남는 한 장을 와이드로 보낸다. 모바일에서는 중앙 칸 사진이 한 줄에 한 장(width 100%)이다.
+조각컷이 없는 객실은 `roomtype_interior` 앞 4장을 중앙 칸에 채우고 와이드는 숨긴다.
 
 ### 객실 평면도
 
