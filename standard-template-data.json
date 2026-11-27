@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "version": "1.16.0",
-    "generatedAt": "2026-11-26T09:41:02.417896697Z",
+    "version": "1.17.0",
+    "generatedAt": "2026-11-27T06:23:27.912330874Z",
     "templateType": "trip_b",
     "propertyId": "555c31f1-1a55-472e-917f-cce9a7d96687",
     "homepageId": "01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad"
@@ -8673,7 +8673,7 @@
               "url": "https://jlnjajtcnyqupfaqjerz.supabase.co/storage/v1/object/public/app-images/homepage/01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad/roomtype_interior/1795672295592-k6b6dw4cll.jpg",
               "sortOrder": 129,
               "description": "",
-              "isSelected": false,
+              "isSelected": true,
               "blockId": "b544b34c-267a-490a-ba24-659189c16733",
               "category": "roomtype_interior"
             },
@@ -8748,6 +8748,15 @@
               "isSelected": true,
               "blockId": "b544b34c-267a-490a-ba24-659189c16733",
               "category": "roomtype_exterior"
+            },
+            {
+              "id": "01a21bac-279c-70be-b74f-90a956a3efef",
+              "url": "https://jlnjajtcnyqupfaqjerz.supabase.co/storage/v1/object/public/app-images/homepage/01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad/roomtype_exterior/1795760594315-zorhyz58zo.jpg",
+              "sortOrder": 162,
+              "description": "",
+              "isSelected": true,
+              "blockId": "b544b34c-267a-490a-ba24-659189c16733",
+              "category": "roomtype_exterior"
             }
           ],
           "nameEn": "",
@@ -8780,7 +8789,7 @@
               "url": "https://jlnjajtcnyqupfaqjerz.supabase.co/storage/v1/object/public/app-images/homepage/01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad/roomtype_interior/1795672296661-va9c5zxurk.jpg",
               "sortOrder": 135,
               "description": "",
-              "isSelected": false,
+              "isSelected": true,
               "blockId": "5899a86a-a772-4435-a4aa-9d43564ae34f",
               "category": "roomtype_interior"
             },
@@ -8851,6 +8860,15 @@
               "id": "01a21668-e50b-7993-891f-57e6be747de2",
               "url": "https://jlnjajtcnyqupfaqjerz.supabase.co/storage/v1/object/public/app-images/homepage/01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad/roomtype_exterior/1795672295891-bowo4f96rx.jpg",
               "sortOrder": 99,
+              "description": "",
+              "isSelected": true,
+              "blockId": "5899a86a-a772-4435-a4aa-9d43564ae34f",
+              "category": "roomtype_exterior"
+            },
+            {
+              "id": "01a21bac-2369-7a3b-b160-09a55eb06885",
+              "url": "https://jlnjajtcnyqupfaqjerz.supabase.co/storage/v1/object/public/app-images/homepage/01a1e1e8-2e92-7892-9a4b-ae4c9121f3ad/roomtype_exterior/1795760594410-c189q6mcm8.jpg",
+              "sortOrder": 163,
               "description": "",
               "isSelected": true,
               "blockId": "5899a86a-a772-4435-a4aa-9d43564ae34f",
